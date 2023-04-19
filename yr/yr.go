@@ -118,7 +118,7 @@ if err != nil {
 	return fmt.Errorf("error writing data text to output file: %w", err)
 }
 
-func AverageTemp(unit string) (float64, error) {
+func AverageTemp() (float64, error) {
 
 // AverageTemperature calculates the average temperature in the provided CSV file.
 
