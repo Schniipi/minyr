@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"github.com/Schniipi/minyr/yr"
 )
 
 func TestLineCount(t *testing.T) {
