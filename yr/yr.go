@@ -119,7 +119,7 @@ err = csvWriter.Write([]string{dataText})
 if err != nil {
 	return fmt.Errorf("error writing data text to output file: %w", err)
 }
-	
+        return nil
 }
 
 func AverageTemp(unit string) (float64, error) {
