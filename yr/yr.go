@@ -15,13 +15,13 @@ import (
 
 // ConvertCelsiusToFahrenheit converts Celsius to Fahrenheit
 func ConvertCelsiusToFahrenheit(celsius float64) float64 {
-	fahrenheit := conv.CelsiusToFahrenheit(celsius)
+	fahrenheit := conv.CelsiusToFahrenheit(inputCelsius)
         return fahrenheit
 }
 
 // ConvertTemp converts the input CSV file with Celsius temperature data
 // to an output CSV file with Fahrenheit temperature data.
-func ConvertTemp(inputFileName, outputFileName string) error {
+func ConvertTemp() error {
 	const outputFileName = "kjevik-temp-fahr-20220318-20230318.csv"
 	const inputFileName = "kjevik-temp-celsius-20220318-20230318.csv"
 
