@@ -10,12 +10,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
-        "github.com/Schniipi/funtemps/tree/main/conv"
+        "github.com/Schniipi/funtemps/conv"
 )
 
 // ConvertCelsiusToFahrenheit converts Celsius to Fahrenheit
 func ConvertCelsiusToFahrenheit(celsius float64) float64 {
-	fahrenheit := conv.CelsiusToFahrenheit(inputCelsius)
+	fahrenheit := conv.CelsiusToFahrenheit(celsius)
         return fahrenheit
 }
 

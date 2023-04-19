@@ -1,8 +1,9 @@
-package yr_test
+package yr
 
 import (
 	"bufio"
 	"encoding/csv"
+        "math"
 	"os"
 	"strconv"
 	"strings"
