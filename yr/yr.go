@@ -21,7 +21,7 @@ func ConvertCelsiusToFahrenheit(celsius float64) float64 {
 
 // GenerateConvertedFile converts the input CSV file with Celsius temperature data
 // to an output CSV file with Fahrenheit temperature data.
-func GenerateConvertedFile() error {
+func ConvertTemp() error {
 	const outputFileName = "kjevik-temp-fahr-20220318-20230318.csv"
 	const inputFileName = "kjevik-temp-celsius-20220318-20230318.csv"
 
@@ -117,8 +117,6 @@ err = csvWriter.Write([]string{dataText})
 if err != nil {
 	return fmt.Errorf("error writing data text to output file: %w", err)
 }
-
-return nil
 
 func AverageTemp(unit string) (float64, error) {
 
