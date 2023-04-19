@@ -1,4 +1,5 @@
-package yr
+
+package yr_test
 
 import (
 	"bufio"
@@ -89,7 +90,7 @@ func TestDataText(t *testing.T) {
 	}
 }
 
-func TestAverageTemp(t *testing.T) {
+func TestAverageTemperature(t *testing.T) {
 	wantAvg := 8.56
 	avgTemp, err := yr.AverageTemp("c")
 	if err != nil {
@@ -101,5 +102,7 @@ func TestAverageTemp(t *testing.T) {
 		t.Errorf("unexpected average temperature: got %.2f, want %.2f", avgTemp, wantAvg)
 	}
 }
+
+
 
 
