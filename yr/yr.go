@@ -89,7 +89,7 @@ func ConvertTemp() error {
 		}
 
 		// Parse the temperature value as a float64
-		temperature, err := parseFloatWithComma(tempField)
+		temperature, err := strconv.ParseFloat(tempField, 64)
 		if err != nil {
 			fmt.Printf("Error on line %d: %v\n", lineNo, err)
 			continue
@@ -121,11 +121,6 @@ if err != nil {
         return nil
 }
 
-func parseFloatWithComma(s string) (float64, error) {
-    s = strings.Replace(s, ",", ".", -1)
-    return strconv.ParseFloat(s, 64)
-}
-
 
 func AverageTemp(unit string) (float64, error) {
 	// Set the appropriate filename, temperature column, and delimiter based on the temperature unit.
@@ -140,7 +135,7 @@ func AverageTemp(unit string) (float64, error) {
 	} else if unit == "f" {
 		filename = "kjevik-temp-fahr-20220318-20230318.csv"
 		tempColumn = 3
-		delimeter = ';'
+		delimeter = ','
 	} else {
 		return 0, fmt.Errorf("invalid temperature unit: %s", unit)
 	}
