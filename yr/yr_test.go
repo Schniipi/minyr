@@ -1,5 +1,5 @@
 
-package yr_test
+package yr
 
 import (
 	"bufio"
