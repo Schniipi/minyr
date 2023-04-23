@@ -3,7 +3,6 @@ package yr
 import (
 	"bufio"
 	"encoding/csv"
-	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -90,7 +89,7 @@ func ConvertTemp() error {
 		}
 
 		// Parse the temperature value as a float64
-		temperature, err := strconv.ParseFloat(tempField, 64)
+		temperature, err := parseFloatWithComma(tempField)
 		if err != nil {
 			fmt.Printf("Error on line %d: %v\n", lineNo, err)
 			continue
@@ -122,100 +121,84 @@ if err != nil {
         return nil
 }
 
+func parseFloatWithComma(s string) (float64, error) {
+    s = strings.Replace(s, ",", ".", -1)
+    return strconv.ParseFloat(s, 64)
+}
+
+
 func AverageTemp(unit string) (float64, error) {
+	// Set the appropriate filename, temperature column, and delimiter based on the temperature unit.
+	var filename string
+	var tempColumn int
+	var delimeter rune
 
-// AverageTemp calculates the average temperature in the provided CSV file.
-
-var filename string
-var tempColumn int
-var delimeter rune
-
-
-// Set the input file and temperature column based on the unit parameter
-if unit == "c" {
-	filename = "kjevik-temp-celsius-20220318-20230318.csv"
-	tempColumn = 3
-	delimeter = ';'
-} else if unit == "f" {
-	filename = "kjevik-temp-fahr-20220318-20230318.csv"
-	tempColumn = 3
-	delimeter = ';'
-} else {
-	return 0, errors.New("invalid temperature unit")
-}
-
-// Open the input CSV file
-file, err := os.Open(filename)
-if err != nil {
-	return 0, fmt.Errorf("error opening input file: %w", err)
-}
-defer file.Close()
-
-// Create a CSV reader to read from the input file
-csvReader := csv.NewReader(file)
-csvReader.Comma = delimeter
-
-// Initialize variables to store the sum of temperatures and the count of lines
-tempSum := 0.0
-lineCount := 0
-
-// Skip the header line
-_, err = csvReader.Read()
-if err != nil {
-	return 0, fmt.Errorf("error reading header line: %w", err)
-}
-
-// Loop through each line of the input CSV file
-lineNum := 2
-for {
-	fields, err := csvReader.Read()
-	if err == io.EOF {
-		break
-	}
-	if err != nil {
-		fmt.Printf("Error reading line  %d: %v\n", lineNum, err)
-
-           if err.Error() == "record on line "+strconv.Itoa(lineNum)+": wrong number of fields" {
-              lineNum++
-              continue
-           }
-           return 0, fmt.Errorf("error reading line: %w", err)
-        }
-
-        if len(fields) != 4 {
-            fmt.Printf("Error on line %d: Invalid input format.\n", lineNum)
-            lineNum++
-            continue
-         }
-
-	// Extract the temperature value from the current line
-	if len(fields) <= tempColumn {
-           fmt.Println("Error: Invalid input format.")
-           lineNum++
-           continue
-         }
-
-        tempStr := fields[tempColumn]
-
-        if tempStr == "" {
-           fmt.Println("Error: Empty temperature value.")
-           lineNum++
-           continue
-         }
-
-	// Convert the temperature value to a float64
-	temp, err := strconv.ParseFloat(tempStr, 64)
-	if err != nil {
-		return 0, fmt.Errorf("error parsing temperature value: %w", err)
+	if unit == "c" {
+		filename = "kjevik-temp-celsius-20220318-20230318.csv"
+		tempColumn = 3
+		delimeter = ';'
+	} else if unit == "f" {
+		filename = "kjevik-temp-fahr-20220318-20230318.csv"
+		tempColumn = 3
+		delimeter = ';'
+	} else {
+		return 0, fmt.Errorf("invalid temperature unit: %s", unit)
 	}
 
-	// Add the temperature value to the sum and increment the line count
-	tempSum += temp
-	lineCount++
+	// Open the file for reading and ensure it is closed when the function exits.
+	file, err := os.Open(filename)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+
+	// Create a new CSV reader with the correct delimiter.
+	reader := csv.NewReader(file)
+	reader.Comma = delimeter
+	// Allow a variable number of fields per record.
+	reader.FieldsPerRecord = -1
+
+	var total float64
+	var line int
+
+	// Loop through the lines in the CSV file.
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return 0, err
+		}
+
+                line++
+
+		// Skip the first line (header).
+		if line < 2 || line > 16755 {
+			continue
+		}
+
+		// Check if the record has the required number of fields.
+		if len(record) <= tempColumn {
+			return 0, fmt.Errorf("invalid data in file %s at line %d, column %d", filename, line, tempColumn)
+		}
+
+		// Parse the temperature value and report an error if it fails.
+		temp, err := strconv.ParseFloat(record[tempColumn], 64)
+		if err != nil {
+			return 0, err
+		}
+
+		// Add the temperature value to the total and increment the count.
+		total += temp
+	}
+
+	// If there's no temperature data, report an error.
+	if line == 1 {
+		return 0, fmt.Errorf("no temperature data found in file %s", filename)
+	}
+
+	// Calculate the average temperature by dividing the total by the number of temperature values.
+	return total / float64(line-1), nil
 }
 
-// Calculate the average temperature
-averageTemp := tempSum / float64(lineCount)
-
-return averageTemp, nil
-}
