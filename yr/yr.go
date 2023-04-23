@@ -139,7 +139,7 @@ if unit == "c" {
 } else if unit == "f" {
 	filename = "kjevik-temp-fahr-20220318-20230318.csv"
 	tempColumn = 3
-	delimeter = ';'
+	delimeter = ','
 } else {
 	return 0, errors.New("invalid temperature unit")
 }
@@ -166,6 +166,7 @@ if err != nil {
 }
 
 // Loop through each line of the input CSV file
+lineNum := 2
 for {
 	fields, err := csvReader.Read()
 	if err == io.EOF {
@@ -176,7 +177,19 @@ for {
 	}
 
 	// Extract the temperature value from the current line
-	tempStr := fields[tempColumn]
+	if len(fields) <= tempColumn {
+           fmt.Println("Error: Invalid input format.")
+           lineNum++
+           continue
+         }
+
+        tempStr := fields[tempColumn]
+
+        if tempStr == "" {
+           fmt.Println("Error: Empty temperature value.")
+           lineNum++
+           continue
+         }
 
 	// Convert the temperature value to a float64
 	temp, err := strconv.ParseFloat(tempStr, 64)
