@@ -139,7 +139,7 @@ if unit == "c" {
 } else if unit == "f" {
 	filename = "kjevik-temp-fahr-20220318-20230318.csv"
 	tempColumn = 3
-	delimeter = ','
+	delimeter = ';'
 } else {
 	return 0, errors.New("invalid temperature unit")
 }
@@ -173,8 +173,20 @@ for {
 		break
 	}
 	if err != nil {
-		return 0, fmt.Errorf("error reading line: %w", err)
-	}
+		fmt.Printf("Error reading line  %d: %v\n", lineNum, err)
+
+           if err.Error() == "record on line "+strconv.Itoa(lineNum)+": wrong number of fields" {
+              lineNum++
+              continue
+           }
+           return 0, fmt.Errorf("error reading line: %w", err)
+        }
+
+        if len(fields) != 4 {
+            fmt.Printf("Error on line %d: Invalid input format.\n", lineNum)
+            lineNum++
+            continue
+         }
 
 	// Extract the temperature value from the current line
 	if len(fields) <= tempColumn {
