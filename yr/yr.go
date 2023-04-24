@@ -70,6 +70,8 @@ func ConvertTemp() error {
 		// Split the line into fields
 		fields := strings.Split(inputScanner.Text(), ";")
 
+                lineNo++
+
 		// Break the loop if the maximum number of lines is exceeded
 		if lineNo > 16755 {
 			break
